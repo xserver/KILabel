@@ -388,6 +388,11 @@ NSString * const KILabelLinkKey = @"link";
         [rangesForLinks addObjectsFromArray:[self getRangesForURLs:self.attributedText]];
     }
     
+    //    if (self.linkDetectionTypes & KILinkTypeOptionPhoneNumber)
+    {
+        [rangesForLinks addObjectsFromArray:[self getRangesForPhoneNumbers:self.attributedText]];
+    }
+    
     return rangesForLinks;
 }
 
@@ -417,7 +422,7 @@ NSString * const KILabelLinkKey = @"link";
             [rangesForUserHandles addObject:@{KILabelLinkTypeKey : @(KILinkTypeUserHandle),
                                               KILabelRangeKey : [NSValue valueWithRange:matchRange],
                                               KILabelLinkKey : matchString
-                                            }];
+                                              }];
         }
     }
     
@@ -450,7 +455,7 @@ NSString * const KILabelLinkKey = @"link";
             [rangesForHashtags addObject:@{KILabelLinkTypeKey : @(KILinkTypeHashtag),
                                            KILabelRangeKey : [NSValue valueWithRange:matchRange],
                                            KILabelLinkKey : matchString,
-                                        }];
+                                           }];
         }
     }
     
@@ -467,10 +472,7 @@ NSString * const KILabelLinkKey = @"link";
     NSDataDetector *detector = [[NSDataDetector alloc] initWithTypes:NSTextCheckingTypeLink error:&error];
     
     NSString *plainText = text.string;
-    
-    NSArray *matches = [detector matchesInString:plainText
-                                         options:0
-                                           range:NSMakeRange(0, text.length)];
+    NSArray *matches = [detector matchesInString:plainText options:0 range:NSMakeRange(0, text.length)];
     
     // Add a range entry for every url we found
     for (NSTextCheckingResult *match in matches)
@@ -489,12 +491,38 @@ NSString * const KILabelLinkKey = @"link";
                 [rangesForURLs addObject:@{KILabelLinkTypeKey : @(KILinkTypeURL),
                                            KILabelRangeKey : [NSValue valueWithRange:matchRange],
                                            KILabelLinkKey : realURL,
-                                        }];
+                                           }];
             }
         }
     }
     
     return rangesForURLs;
+}
+
+- (NSArray *)getRangesForPhoneNumbers:(NSAttributedString *)text
+{
+    NSMutableArray *rangesForPhoneNumbers = [[NSMutableArray alloc] init];;
+    NSError *error = nil;
+    NSDataDetector *detector = [[NSDataDetector alloc] initWithTypes:NSTextCheckingTypePhoneNumber error:&error];
+    
+    NSString *plainText = text.string;
+    NSArray *matches = [detector matchesInString:plainText options:0 range:NSMakeRange(0, text.length)];
+    
+    for (NSTextCheckingResult *match in matches)
+    {
+        NSRange matchRange = [match range];
+        NSString *matchString = [plainText substringWithRange:matchRange];
+        
+        if ([match resultType] == NSTextCheckingTypePhoneNumber)
+        {
+            [rangesForPhoneNumbers addObject:@{
+                                               KILabelLinkTypeKey : @(KILinkTypePhoneNumber),
+                                               KILabelRangeKey    : [NSValue valueWithRange:matchRange],
+                                               KILabelLinkKey     : matchString
+                                               }];
+        }
+    }
+    return rangesForPhoneNumbers;
 }
 
 - (BOOL)ignoreMatch:(NSString*)string
@@ -505,7 +533,7 @@ NSString * const KILabelLinkKey = @"link";
 - (NSAttributedString *)addLinkAttributesToAttributedString:(NSAttributedString *)string linkRanges:(NSArray *)linkRanges
 {
     NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithAttributedString:string];
-
+    
     for (NSDictionary *dictionary in linkRanges)
     {
         NSRange range = [[dictionary objectForKey:KILabelRangeKey] rangeValue];
@@ -547,14 +575,14 @@ NSString * const KILabelLinkKey = @"link";
     textBounds.origin = bounds.origin;
     textBounds.size.width = ceil(textBounds.size.width);
     textBounds.size.height = ceil(textBounds.size.height);
-
+    
     if (textBounds.size.height < bounds.size.height)
     {
         // Take verical alignment into account
         CGFloat offsetY = (bounds.size.height - textBounds.size.height) / 2.0;
         textBounds.origin.y += offsetY;
     }
-
+    
     // Restore the old container state before we exit under any circumstances
     _textContainer.size = savedTextContainerSize;
     _textContainer.maximumNumberOfLines = savedTextContainerNumberOfLines;
@@ -701,26 +729,34 @@ NSString * const KILabelLinkKey = @"link";
 {
     switch (linkType)
     {
-    case KILinkTypeUserHandle:
-        if (_userHandleLinkTapHandler)
-        {
-            _userHandleLinkTapHandler(self, string, range);
-        }
-        break;
-        
-    case KILinkTypeHashtag:
-        if (_hashtagLinkTapHandler)
-        {
-            _hashtagLinkTapHandler(self, string, range);
-        }
-        break;
-        
-    case KILinkTypeURL:
-        if (_urlLinkTapHandler)
-        {
-            _urlLinkTapHandler(self, string, range);
-        }
-        break;
+        case KILinkTypeUserHandle:
+            if (_userHandleLinkTapHandler)
+            {
+                _userHandleLinkTapHandler(self, string, range);
+            }
+            break;
+            
+        case KILinkTypeHashtag:
+            if (_hashtagLinkTapHandler)
+            {
+                _hashtagLinkTapHandler(self, string, range);
+            }
+            break;
+            
+        case KILinkTypeURL:
+            if (_urlLinkTapHandler)
+            {
+                _urlLinkTapHandler(self, string, range);
+            }
+            break;
+            
+        case KILinkTypePhoneNumber:
+            if (_phoneNumberTapHandler)
+            {
+                _phoneNumberTapHandler(self, string, range);
+            }
+            break;
+            
     }
 }
 
