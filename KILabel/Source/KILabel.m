@@ -405,6 +405,11 @@ NSString * const KILabelLinkKey = @"link";
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         NSError *error = nil;
+        
+        if (_userHandlePattern == nil) {
+            _userHandlePattern = @"(?<!\\w)@([\\w\\_]+)?";
+        }
+        
         regex = [[NSRegularExpression alloc] initWithPattern:@"(?<!\\w)@([\\w\\_]+)?" options:0 error:&error];
     });
     

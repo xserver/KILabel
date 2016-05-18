@@ -32,25 +32,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 typedef NS_ENUM(NSUInteger, KILinkType)
 {
-    /**
-     *  Usernames starting with "@" token
-     */
-    KILinkTypeUserHandle,
-    
-    /**
-     *  Hashtags starting with "#" token
-     */
-    KILinkTypeHashtag,
-    
-    /**
-     *  URLs, http etc
-     */
-    KILinkTypeURL,
-    
-    /**
-     *  Phone number
-     */
-    KILinkTypePhoneNumber,
+    KILinkTypeUserHandle,   //  "@"
+    KILinkTypeHashtag,  //"#"
+    KILinkTypeURL,      //URLs, http etc
+    KILinkTypePhoneNumber,      //  Phone number
 };
 
 /**
@@ -58,35 +43,14 @@ typedef NS_ENUM(NSUInteger, KILinkType)
  */
 typedef NS_OPTIONS(NSUInteger, KILinkTypeOption)
 {
-    /**
-     *  No links
-     */
-    KILinkTypeOptionNone = 0,
+    KILinkTypeOptionNone = 0,   //  No links
     
-    /**
-     *  Specifies to include KILinkTypeUserHandle links
-     */
     KILinkTypeOptionUserHandle = 1 << KILinkTypeUserHandle,
-    
-    /**
-     *  Specifies to include KILinkTypeHashtag links
-     */
     KILinkTypeOptionHashtag = 1 << KILinkTypeHashtag,
-    
-    /**
-     *  Specifies to include KILinkTypeURL links
-     */
     KILinkTypeOptionURL = 1 << KILinkTypeURL,
-    
-    /**
-     *  Specifies to include KILinkTypePhoneNumber links
-     */
     KILinkTypeOptionPhoneNumber = 1 << KILinkTypePhoneNumber,
     
-    /**
-     *  Convenience contstant to include all link types
-     */
-    KILinkTypeOptionAll = NSUIntegerMax,
+    KILinkTypeOptionAll = NSUIntegerMax,    //  all link types
 };
 
 
@@ -104,6 +68,10 @@ typedef void (^KILinkTapHandler)(KILabel *label, NSString *string, NSRange range
 extern NSString * const KILabelLinkTypeKey;
 extern NSString * const KILabelRangeKey;
 extern NSString * const KILabelLinkKey;
+
+
+
+
 
 /**
  * A UILabel subclass that highlights links, hashtags and usernames and enables response to user
@@ -133,6 +101,12 @@ IB_DESIGNABLE
  */
 @property (nullable, nonatomic, strong) NSSet *ignoredKeywords;
 
+
+
+@property (nonatomic, copy) NSString *userHandlePattern;    //  default = nil, use system.
+
+
+
 /** ****************************************************************************************** **
  * @name Format & Appearance
  ** ****************************************************************************************** **/
@@ -149,6 +123,7 @@ IB_DESIGNABLE
  */
 @property (nonatomic, assign) IBInspectable BOOL systemURLStyle;
 
+#pragma mark - Attributes
 /**
  * Get the current attributes for the given link type.
  *
@@ -167,21 +142,16 @@ IB_DESIGNABLE
  */
 - (void)setAttributes:(nullable NSDictionary*)attributes forLinkType:(KILinkType)linkType;
 
-/** ****************************************************************************************** **
- * @name Callbacks
- ** ****************************************************************************************** **/
 
-/**
- * Callback block for KILinkType link tap.
- **/
+
+#pragma mark - Callback block for KILinkType link tap
 @property (nullable, nonatomic, copy) KILinkTapHandler userHandleLinkTapHandler;
 @property (nullable, nonatomic, copy) KILinkTapHandler hashtagLinkTapHandler;
 @property (nullable, nonatomic, copy) KILinkTapHandler urlLinkTapHandler;
 @property (nullable, nonatomic, copy) KILinkTapHandler phoneNumberTapHandler;
 
-/** ****************************************************************************************** **
- * @name Geometry
- ** ****************************************************************************************** **/
+
+#pragma mark - Geometry
 
 /**
  * Returns a dictionary of data about the link that it at the location. Returns nil if there is no link.
