@@ -410,7 +410,7 @@ NSString * const KILabelLinkKey = @"link";
             _userHandlePattern = @"(?<!\\w)@([\\w\\_]+)?";
         }
         
-        regex = [[NSRegularExpression alloc] initWithPattern:@"(?<!\\w)@([\\w\\_]+)?" options:0 error:&error];
+        regex = [[NSRegularExpression alloc] initWithPattern:_userHandlePattern options:0 error:&error];
     });
     
     // Run the expression and get matches
