@@ -142,7 +142,14 @@ IB_DESIGNABLE
  */
 - (void)setAttributes:(nullable NSDictionary*)attributes forLinkType:(KILinkType)linkType;
 
-
+/**
+ *  判断是否点中 link（URL、@、#、Phone）
+ *
+ *  @param point 用户点击的point
+ *
+ *  @return 是否点中 KILinkTypeOption，点中则使用 KILinkTapHandler
+ */
+- (BOOL)handleTouchPoint:(CGPoint)point;
 
 #pragma mark - Callback block for KILinkType link tap
 @property (nullable, nonatomic, copy) KILinkTapHandler userHandleLinkTapHandler;
